@@ -7,6 +7,8 @@ from bs4 import BeautifulSoup
 import json
 import shutil
 from random import randrange
+import sys
+import argparse
 
 is_test_mode = True  # //TODO : change test mode to False when development ends
 base_url = r'https://www.reddit.com/r/DotA2/'  # url for crawling
@@ -34,9 +36,30 @@ headers = {
     }
 
 
+# Generate Help file for command line usage
+parser = argparse.ArgumentParser(
+    description='''This script gets data from "reddit.com/r/Dota2" and download videos/images if requested''',
+    usage='Crawl.py 3 True',
+    epilog="""Download directory path : ~/Desktop/Reddit_Dota """)
+parser.add_argument('max_page', type=int, default=2, help='Max page number to be parsed!')
+parser.add_argument('download', type=bool, default=True, help='Download videos and images if requested!')
+# parser.add_argument('download', nargs='*', type=bool, default=True, help='Download videos and images if requested!')
+# parser.add_argument('bar', nargs='*', default=[1, 2, 3], help='BAR!')
+args = parser.parse_args()
+
+
 def print_test(*args, **kwargs):
     if is_test_mode:
         print(*args, **kwargs)
+
+
+def str_to_bool(s):
+    if s == 'True':
+        return True
+    elif s == 'False':
+        return False
+    else:
+        raise ValueError("Cannot covert {} to a bool".format(s))
 
 
 def create_folder(directory):
@@ -118,11 +141,12 @@ def get_video_url_from_twitch(url):
             last_script_tag = soup_twitch.find_all('script')[-1].string
             clip_info = last_script_tag[last_script_tag.index(clip_info_keyword):]
             clip_info = '{%s}' % (clip_info.split('{', 1)[1].rsplit('};', 1)[0],)
-            # print(clip_info)
+            # print_test(clip_info)
             quality_options = clip_info[clip_info.index(quality_options_keyword):]
-            quality_options = '[%s]' % (quality_options.split('[', 1)[1].rsplit('],', 1)[0],)
+            quality_options = '[%s]' % (quality_options.split('[', 1)[1].split('],', 1)[0],)
+            # print_test("Quality Options Raw Data : {}\n\n".format(quality_options))
             json_data = json.loads(quality_options)
-            # print(json_data)
+            # print_test(json_data)
             for json_object in json_data:
                 video_quality = json_object[video_quality_keyword]
                 video_source = json_object[video_source_keyword]
@@ -130,7 +154,7 @@ def get_video_url_from_twitch(url):
                     video_url = video_source
                     break
                 video_links.append({video_quality_keyword: video_quality, video_source_keyword: video_source})
-            # print(video_links)
+            # print_test(video_links)
             if not video_url:
                 video_url = video_links[0][video_source_keyword]
             return video_url
@@ -255,6 +279,7 @@ def save_to_folder(data_domain, data_url, title, category):
 # <p class:title>
 # <a class:title href>string</a> <span class:linkflairlabel title> # span kısmı kategori belirtiyor, bütün gönderilerde olmayabilir
 def reddit_dota_spider(max_page, download=False):
+    print_test("Reddit Dota Spider - Max Page : {} - Download : {}".format(max_page, download))
     page_no = 1
     item_no = 1
     url = base_url
@@ -296,6 +321,12 @@ def reddit_dota_spider(max_page, download=False):
         url = next_page_url
 
 
-reddit_dota_spider(3, True)
+print_test("Command Line Args : {}".format(sys.argv[1:]))
+if len(sys.argv) > 2:
+    reddit_dota_spider(int(sys.argv[1]), str_to_bool(sys.argv[2]))
+elif len(sys.argv) > 1:
+    reddit_dota_spider(int(sys.argv[1]), True)
+else:
+    reddit_dota_spider(4, False)
 
 
