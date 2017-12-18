@@ -41,8 +41,14 @@ parser = argparse.ArgumentParser(
     description='''This script gets data from "reddit.com/r/Dota2" and download videos/images if requested''',
     usage='Crawl.py 3 True',
     epilog="""Download directory path : ~/Desktop/Reddit_Dota """)
-parser.add_argument('max_page', type=int, default=2, help='Max page number to be parsed!')
-parser.add_argument('download', type=bool, default=True, help='Download videos and images if requested!')
+parser.add_argument('max_page', nargs='?', type=int, default=3,
+                    help='Max page number to be parsed! (Default value is : 3)')
+parser.add_argument('download', nargs='?', type=str, default='True', choices=['True', 'False'],
+                    help='Download videos and images if requested! (Default value is : True)')
+# parser.add_argument('-page', '--max_page', type=int, default=2, help='Max page number to be parsed!')
+# parser.add_argument('-dl', '--download', type=bool, default=True, choices=[True, False],
+#                     help='Download videos and images if requested!')
+
 # parser.add_argument('download', nargs='*', type=bool, default=True, help='Download videos and images if requested!')
 # parser.add_argument('bar', nargs='*', default=[1, 2, 3], help='BAR!')
 args = parser.parse_args()
@@ -231,8 +237,8 @@ def get_video_url_from_streamable(url):
 
 
 def save_to_folder(data_domain, data_url, title, category):
-    print_test("Save To Folder - data_domain : {} - data_url : {} - title : {} - category : {}"
-          .format(data_domain, data_url, title, category))
+    print_test("Save To Folder - data_domain : {} - data_url : {} - title : {} - category : {}".
+               format(data_domain, data_url, title, category))
     folder_directory = get_reddit_dota_folder_directory()
     create_folder(folder_directory)
     if category:
@@ -321,12 +327,21 @@ def reddit_dota_spider(max_page, download=False):
         url = next_page_url
 
 
-print_test("Command Line Args : {}".format(sys.argv[1:]))
-if len(sys.argv) > 2:
-    reddit_dota_spider(int(sys.argv[1]), str_to_bool(sys.argv[2]))
-elif len(sys.argv) > 1:
-    reddit_dota_spider(int(sys.argv[1]), True)
+# print_test("Command Line Args : {}".format(sys.argv[1:]))
+# if len(sys.argv) > 2:
+#     reddit_dota_spider(int(sys.argv[1]), str_to_bool(sys.argv[2]))
+# elif len(sys.argv) > 1:
+#     reddit_dota_spider(int(sys.argv[1]), True)
+# else:
+#     reddit_dota_spider(4, False)
+
+print_test("Command Line Args : {}".format(parser.parse_args()))
+if args.max_page and args.download:
+    reddit_dota_spider(args.max_page, str_to_bool(args.download))
+elif args.max_page:
+    reddit_dota_spider(args.max_page, True)
 else:
     reddit_dota_spider(4, False)
+input("Press any key to exit..")
 
 
