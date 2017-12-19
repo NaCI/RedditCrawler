@@ -45,12 +45,6 @@ parser.add_argument('max_page', nargs='?', type=int, default=3,
                     help='Max page number to be parsed! (Default value is : 3)')
 parser.add_argument('download', nargs='?', type=str, default='True', choices=['True', 'False'],
                     help='Download videos and images if requested! (Default value is : True)')
-# parser.add_argument('-page', '--max_page', type=int, default=2, help='Max page number to be parsed!')
-# parser.add_argument('-dl', '--download', type=bool, default=True, choices=[True, False],
-#                     help='Download videos and images if requested!')
-
-# parser.add_argument('download', nargs='*', type=bool, default=True, help='Download videos and images if requested!')
-# parser.add_argument('bar', nargs='*', default=[1, 2, 3], help='BAR!')
 args = parser.parse_args()
 
 
@@ -90,16 +84,10 @@ def get_redirect_url(url, need_decode=False):
     return r.url
 
 
-# img_url_sample = 'https://i.redd.it/tadu99r63etz.jpg'
-# video_url_sample = 'https://clips-media-assets.twitch.tv/26543858832-offset-11546-1280x720.mp4'
-# video_url_sample = 'https://redirector.googlevideo.com/videoplayback?ratebypass=yes&expire=1508783135&mm=31&source=youtube&mn=sn-ab5l6nek&mt=1508761397&mv=m&ms=au&pl=52&dur=662.279&requiressl=yes&ipbits=0&ei=v9_tWfbkCMLQVfKGgsgE&mime=video%2Fmp4&ip=2001%3A19f0%3A7402%3A95%3A5400%3Aff%3Afe6a%3Ad50a&key=yt6&itag=22&initcwndbps=408750&lmt=1472151787524471&id=o-AELkD7SlSX_vshn6MOHfJOcyKjztrCCjs_utWWlxXz0T&sparams=dur%2Cei%2Cid%2Cinitcwndbps%2Cip%2Cipbits%2Citag%2Clmt%2Cmime%2Cmm%2Cmn%2Cms%2Cmv%2Cpl%2Cratebypass%2Crequiressl%2Csource%2Cexpire&signature=3047FDF256A3D7296495F26AC0E48C72FE719B7E.327A3EA828D0C11845EA6A970E47A5788DCAE88B'
 def download_web_file(url, directory):
     print_test("Download Web File - Url : {} - Directory : {}".format(url, directory))
     if url:
         urllib.request.urlretrieve(url, directory)
-
-
-# download_web_file(get_redirect_url(video_url_sample), "")
 
 
 def download_web_file_with_header(url, directory):
@@ -114,8 +102,6 @@ def download_web_file_with_header(url, directory):
     resp = urllib.request.urlopen(req)
     with resp, open(directory, 'wb') as out_file:
         shutil.copyfileobj(resp, out_file)
-    # with open(directory, 'b+w') as f:
-    #     f.write(resp.read())
 
 
 def get_reddit_dota_folder_directory():
@@ -186,7 +172,6 @@ def get_video_url_from_youtube(url):
     youtube_watch_keyword = "watch?"
     weibomiaopai_url = "https://weibomiaopai.com/online-video-downloader/youtube"
     weibomiaopai_serverlist = ['helloacm.com', 'happyukgo.com', 'uploadbeta.com', 'steakovercooked.com']
-    # weibomiaopai_submit_button_keyword = '$("button#input-submit").click(function()'
     weibomiaopai_hash_keyword = "var hash ="
     video_url = None
     hash_value = None
@@ -273,17 +258,6 @@ def save_to_folder(data_domain, data_url, title, category):
         download_web_file_with_header(video_url, data_directory)
 
 
-# <div class:thing data-url data-domain> # data-url kısmında png adresi gömülü oluyor ya da twitch vidyosuysa onun linki
-# data-domain="imgur.com"
-# data-domain="clyp.it" # this is for auido
-# data-domain="youtube.com data-url="https://www.youtube.com/watch?v=h5vU5GrTqV0"
-# data-domain="gfycat.com data-url="https://gfycat.com/gifs/detail/SerpentineBrilliantDwarfrabbit"
-# data-domain="clips.twitch.tv" data-url="https://clips.twitch.tv/PrettiestGeniusDuckCeilingCat"
-# data-domain="i.redd.it" data-url="https://i.redd.it/n67nsk0iudtz.jpg"
-# data-domain="self.DotA2" data-url="/r/DotA2/comments/780mo8/i_like_overthrow/"
-# data-domain="twitter.com"
-# <p class:title>
-# <a class:title href>string</a> <span class:linkflairlabel title> # span kısmı kategori belirtiyor, bütün gönderilerde olmayabilir
 def reddit_dota_spider(max_page, download=False):
     print_test("Reddit Dota Spider - Max Page : {} - Download : {}".format(max_page, download))
     page_no = 1
@@ -326,14 +300,6 @@ def reddit_dota_spider(max_page, download=False):
         page_no += 1
         url = next_page_url
 
-
-# print_test("Command Line Args : {}".format(sys.argv[1:]))
-# if len(sys.argv) > 2:
-#     reddit_dota_spider(int(sys.argv[1]), str_to_bool(sys.argv[2]))
-# elif len(sys.argv) > 1:
-#     reddit_dota_spider(int(sys.argv[1]), True)
-# else:
-#     reddit_dota_spider(4, False)
 
 print_test("Command Line Args : {}".format(parser.parse_args()))
 if args.max_page and args.download:
